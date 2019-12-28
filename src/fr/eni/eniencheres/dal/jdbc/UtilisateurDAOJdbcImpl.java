@@ -340,6 +340,19 @@ public class UtilisateurDAOJdbcImpl implements UtilisateurDAO {
 		return utilisateur;
 
 	}
+
+	@Override
+	public Map<String, String[]> selectAllIdentifiantsUniques() throws DALException {
+		Map<String, String[]> identifiants =new HashMap<>();
+		List<Utilisateur> utilisateurs = this.selectAll();
+		for (Utilisateur user : utilisateurs) {
+			String[] mdpEmail= new String[2];
+			mdpEmail[0]=user.getMotDePasse();
+			mdpEmail[1]=user.getEmail();
+			identifiants.put(user.getPseudo(), mdpEmail);
+		}
+		return identifiants;
+	}
 	
 	
 }

@@ -60,6 +60,13 @@ public interface UtilisateurDAO {
 	public Map<String, String> selectAllIdentifiants() throws DALException;
 
 	/**
+	 * Retourne une HashMap de tous les <pseudo,[mdp,email]>
+	 * @return
+	 * @throws DALException
+	 */
+	public Map<String, String[]> selectAllIdentifiantsUniques() throws DALException;
+	
+	/**
 	 * Retourne un objet utilisateur en fonction du pseudo
 	 * @param pseudo
 	 * @return Utilisateur

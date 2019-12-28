@@ -82,23 +82,28 @@ public class TraitementProfile extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//TODO Controler l'unicite de l'email
+		//TODO TESTER le contrôle de l'unicite de l'email
 		HttpSession session = request.getSession();
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		String pseudo = (String) session.getAttribute("pseudo");
-		Map<String, String> listeIdentifiants = utilisateurManager.getAllIdentifiants();
+		String email = request.getParameter("email");
+		Map<String, String[]> listeIdentifiants = utilisateurManager.getAllIdentifiantsUniques();
 		boolean pseudoOk = true;
+		boolean emailOk = true;
 		Utilisateur utilisateurModifie=null;
 		
-		//teste si pseudo correspond à  une entrée dans la bdd
-		for(Entry<String, String> user : listeIdentifiants.entrySet()) {
+		//teste si pseudo ou l'email correspond à  une entrée dans la bdd
+		for(Entry<String, String[]> user : listeIdentifiants.entrySet()) {
 			String pseudoBdd = user.getKey();
+			String emailBdd = user.getValue()[1];
 		    if (pseudoBdd.equals(pseudo)) {
 				pseudoOk = false;
+				if (emailBdd.equals(email)) {
+					emailOk=false;
+				}
 				utilisateurModifie = utilisateurManager.getByPseudo(pseudo);
 		    }
 		}
-		
 		
 		//crée une instance pojo utilisateur avec les données
 		Utilisateur utilisateur = new Utilisateur();
@@ -113,34 +118,54 @@ public class TraitementProfile extends HttpServlet {
 		utilisateur.setCredit(0);
 		utilisateur.setAdministrateur(false);
 		
-		
+		//si le pseudo existe déjà
 		if (!pseudoOk) {
-			//si le pseudo existe déjà
+			//cas de l'update on contrôle l'unicité de l'email
 			if (request.getParameter("update")!=null) {
-				utilisateurModifie.setEmail(utilisateur.getEmail());
-				utilisateurModifie.setNom(utilisateur.getNom());
-				utilisateurModifie.setPrenom(utilisateur.getPrenom());
-				utilisateurModifie.setTelephone(utilisateur.getTelephone());
-				utilisateurModifie.setRue(utilisateur.getRue());
-				utilisateurModifie.setCodePostal(utilisateur.getCodePostal());
-				utilisateurModifie.setVille(utilisateur.getVille());
-				utilisateurManager.updateUtilisateur(utilisateurModifie);
-				RequestDispatcher rd = request.getRequestDispatcher("/Accueil");
-				rd.forward(request, response);
+				//l'email n'existe pas déjà  : on modifie l'utilisateur et on update la bdd
+				if (emailOk) {
+					utilisateurModifie.setEmail(utilisateur.getEmail());
+					utilisateurModifie.setNom(utilisateur.getNom());
+					utilisateurModifie.setPrenom(utilisateur.getPrenom());
+					utilisateurModifie.setTelephone(utilisateur.getTelephone());
+					utilisateurModifie.setRue(utilisateur.getRue());
+					utilisateurModifie.setCodePostal(utilisateur.getCodePostal());
+					utilisateurModifie.setVille(utilisateur.getVille());
+					utilisateurManager.updateUtilisateur(utilisateurModifie);
+					RequestDispatcher rd = request.getRequestDispatcher("/Accueil");
+					rd.forward(request, response);
+				//l'email existe déjà : on envoie l'erreur sur l'email et l'objet utilisateur
+				} else {
+					request.setAttribute("erreurEmail", "Veuillez choisir un autre email.");
+					request.setAttribute("utilisateur", utilisateur);
+					RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
+					rd.forward(request, response);
+				}
+			//cas de la création : on envoie l'erreur sur le pseudo et l'objet utilisateur
 			} else {
-				//on envoie l'erreur sur le pseudo et l'objet utilisateur
 				request.setAttribute("erreurPseudo", "Veuillez choisir un autre pseudo.");
 				request.setAttribute("utilisateur", utilisateur);
 				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
 				rd.forward(request, response);
 			}
+		//le pseudo n'existe pas
 		}else {
-			//sinon on inclut l'utilisateur
-			utilisateur.setPseudo(request.getParameter("pseudo"));
-			utilisateurManager.addUtilisateur(utilisateur);
-			session.setAttribute("pseudo", utilisateur.getPseudo());
-			RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
-			rd.forward(request, response);
+			//on contrôle l'unicité de l'email
+			if (!emailOk) {
+				//on envoie l'erreur sur l'email et l'objet utilisateur
+				request.setAttribute("erreurEmail", "Veuillez choisir un autre email.");
+				request.setAttribute("utilisateur", utilisateur);
+				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
+				rd.forward(request, response);
+			} else {
+				//sinon on inclut l'utilisateur
+				utilisateur.setPseudo(request.getParameter("pseudo"));
+				utilisateurManager.addUtilisateur(utilisateur);
+				session.setAttribute("pseudo", utilisateur.getPseudo());
+				RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
+				rd.forward(request, response);
+			}
+
 		}
 		
 		
