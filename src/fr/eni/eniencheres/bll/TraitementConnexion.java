@@ -82,14 +82,15 @@ public class TraitementConnexion extends HttpServlet {
 			RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
 			rd.forward(request, response);
 		} else {
-			request.setAttribute("erreurConnexion", "La connexion a echoue. Veuillez reessayer.");
+			request.setAttribute("erreurConnexion", "La connexion a �chou�. Veuillez r�essayer.");
 			RequestDispatcher rd = request.getRequestDispatcher("/Connexion");
 			rd.forward(request, response);
 		}
+
 	}
 
 	/**
-	 * teste si pseudo et mdp correrspondent a une entree dans la bdd
+	 * teste si pseudo et mdp correrspondent a� une entree dans la bdd
 	 * TODO reflechir a centraliser les regeles de gestion dans le manager La servlet regroupe tout ce qui est Http
 	 * @param pseudoConnexion
 	 * @param mdpConnexion
@@ -101,7 +102,7 @@ public class TraitementConnexion extends HttpServlet {
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		Map<String[], String> listeIdentifiants = utilisateurManager.getAllPseudoEmail();
 		
-		//teste si le pseudo existe deja
+		//teste si le pseudo existe d�j�
 		boolean connexionOk = false;
 		for(Entry<String[], String> user : listeIdentifiants.entrySet()) {
 			String pseudo = user.getKey()[0];
