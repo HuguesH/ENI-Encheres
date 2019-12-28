@@ -33,10 +33,10 @@ public class TraitementConnexion extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//r�cup�ration de la session
+		//recuperation de la session
 		HttpSession session = request.getSession();
 		
-		//d�connexion de la session
+		//deconnexion de la session
 		session.invalidate();
 		
 		//forward vers accueil
@@ -54,9 +54,9 @@ public class TraitementConnexion extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		log("INFO", "method doPost Servlet : Connexion");
+		log("INFO : ", "method doPost Servlet : Connexion");
 
-		//r�cuperation du pseudo choisi
+		//recuperation du pseudo choisi
 		String pseudoConnexion = request.getParameter("identifiant");
 		
 		//Creer un Hash du mot de passe des la reception pour et ne transporter que le hash dans les methodes.
