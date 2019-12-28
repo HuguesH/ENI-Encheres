@@ -83,17 +83,18 @@ public class TraitementProfile extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//TODO A FINIR le contrôle de l'unicite de l'email
+		//TODO Faire le contrôle de la concordance des passwords
 		HttpSession session = request.getSession();
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		String pseudo = (String) session.getAttribute("pseudo");
 		String email = request.getParameter("email");
-		Map<String, String[]> listeIdentifiants = utilisateurManager.getAllIdentifiantsUniques();
+		Map<String, String[]> listeIdentifiantsUniques = utilisateurManager.getAllIdentifiantsUniques();
 		boolean pseudoOk = true;
 		boolean emailOk = true;
 		Utilisateur utilisateurModifie=null;
 		
 		//teste si pseudo ou l'email correspond à  une entrée dans la bdd
-		for(Entry<String, String[]> user : listeIdentifiants.entrySet()) {
+		for(Entry<String, String[]> user : listeIdentifiantsUniques.entrySet()) {
 			String pseudoBdd = user.getKey();
 			String emailBdd = user.getValue()[1];
 		    if (pseudoBdd.equals(pseudo)) {
