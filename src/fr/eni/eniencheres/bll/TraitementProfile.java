@@ -83,7 +83,6 @@ public class TraitementProfile extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//TODO A FINIR le contrôle de l'unicite de l'email
-		//TODO Faire le contrôle de la concordance des passwords
 		//TODO Demander une checkbox pour la omdification de mot de passe
 		HttpSession session = request.getSession();
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
@@ -159,20 +158,23 @@ public class TraitementProfile extends HttpServlet {
 				request.setAttribute("utilisateur", utilisateur);
 				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
 				rd.forward(request, response);
-			} else {
-				//sinon on inclut l'utilisateur
-				utilisateur.setPseudo(request.getParameter("pseudo"));
-				utilisateurManager.addUtilisateur(utilisateur);
-				session.setAttribute("pseudo", utilisateur.getPseudo());
-				RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
+			}
+			//on controle la concordance des mots de passes
+			if(utilisateur.getMotDePasse().equals(UtilisateurManager.hash(request.getParameter("password2")))) {
+				//on envoie l'erreur sur les mots de passe et l'objet utilisateur
+				utilisateur.setMotDePasse("");
+				request.setAttribute("erreurMotDePasse", "Les mots de passes ne correspondent pas.");
+				request.setAttribute("utilisateur", utilisateur);
+				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
 				rd.forward(request, response);
 			}
-
-		}
-		
-		
-		
-		
+			//sinon on inclut l'utilisateur
+			utilisateur.setPseudo(request.getParameter("pseudo"));
+			utilisateurManager.addUtilisateur(utilisateur);
+			session.setAttribute("pseudo", utilisateur.getPseudo());
+			RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
+			rd.forward(request, response);
+		}		
 	}
 
 }
