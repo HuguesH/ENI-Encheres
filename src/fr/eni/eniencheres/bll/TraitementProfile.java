@@ -84,6 +84,7 @@ public class TraitementProfile extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//TODO A FINIR le contrôle de l'unicite de l'email
 		//TODO Faire le contrôle de la concordance des passwords
+		//TODO Demander une checkbox pour la omdification de mot de passe
 		HttpSession session = request.getSession();
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		String pseudo = (String) session.getAttribute("pseudo");
