@@ -77,7 +77,7 @@ public class UtilisateurManager {
 	}
 
 	/**
-	 * met � jour l'utilisateur dans la base de donnees
+	 * met a jour l'utilisateur dans la base de donnees
 	 * @param utilisateur
 	 */
 	 public void delete(Utilisateur utilisateur) {
@@ -114,5 +114,18 @@ public class UtilisateurManager {
 		
 	}
 
+	/**
+	 * retourne un dictionnaire de tous les pseudos/motdepasse+email
+	 * @return Map<String, String>
+	 */
+	public Map<String, String[]> getAllIdentifiantsUniques() {
+		Map<String, String[]> allIdentifiantsUniques = new HashMap<>();
+		try {
+			allIdentifiantsUniques = utilisateurDAO.selectAllIdentifiantsUniques();
+		} catch (DALException e) {
+			e.printStackTrace();
+		}
+		return allIdentifiantsUniques;
+	}
 }
 

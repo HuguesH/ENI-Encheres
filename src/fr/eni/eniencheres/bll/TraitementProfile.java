@@ -82,7 +82,7 @@ public class TraitementProfile extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//TODO TESTER le contrôle de l'unicite de l'email
+		//TODO A FINIR le contrôle de l'unicite de l'email
 		HttpSession session = request.getSession();
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		String pseudo = (String) session.getAttribute("pseudo");
