@@ -10,4 +10,12 @@
 *.rar
 
 ## TODO ajouter les fichiers des IDE ( Eclipse ) dès que le processus de build serra indépendant.
+# Eclipse : 
+build
+
+# Maven 
+target
+
+## LibreOffice 
+# Fichiers temporaires crees lors d'une ouverture
 *.~lock.*
