@@ -1,20 +1,16 @@
 package fr.eni.eniencheres.dal;
 
 import fr.eni.eniencheres.bo.Utilisateur;
-import fr.eni.eniencheres.dal.DAOFactory;
-import fr.eni.eniencheres.dal.UtilisateurDAO;
-import fr.eni.eniencheres.dal.DALException;
+import fr.eni.eniencheres.conf.MyLogger;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.Ignore;
-
 public class UtilisateurDAOTest {
 	
-	private static Logger LOG = Logger.getLogger("UtilisateurDAOTest");
+	private static Logger LOG = MyLogger.getLogger(UtilisateurDAOTest.class);
 
     UtilisateurDAO utilisateurDAO = DAOFactory.getUtilisateurDAO();
 
