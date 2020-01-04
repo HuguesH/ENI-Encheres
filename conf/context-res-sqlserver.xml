@@ -20,14 +20,20 @@
 
     <!-- Default set of monitored resources. If one of these changes, the    -->
     <!-- web application will be reloaded.                                   -->
-    <WatchedResource>WEB-INF/web.xml</WatchedResource>
     <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
     <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
-    
 
-    <Resource name="jdbc/pool_cnx" auth="Container"   type="javax.sql.DataSource"
-               maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-               username="sa" password="" driverClassName="org.h2.Driver"
-               url="jdbc:h2:file:./target/test-db;MODE=MSSQLSERVER" /> 
+
+    <Resource
+            name="jdbc/pool_cnx"
+            driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            type="javax.sql.DataSource"
+            url="jdbc:sqlserver://localhost;databasename=BDD_ENI_ENCHERES"
+            username="sa"
+            password="Pa$$w0rd"
+            maxTotal="100"
+            maxIdle="30"
+            maxWaitMillis="10000"
+    />
 
 </Context>

@@ -16,6 +16,10 @@ build
 # Maven 
 target
 
+#InteliJ
+.idea
+*.iml
+
 ## LibreOffice 
 # Fichiers temporaires crees lors d'une ouverture
 *.~lock.*
