@@ -3,6 +3,8 @@ package fr.eni.eniencheres.bll;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import fr.eni.eniencheres.bo.Utilisateur;
+import fr.eni.eniencheres.conf.LogFilter;
+import fr.eni.eniencheres.conf.MyLogger;
 
 /**
  * Servlet implementation class TraitementProfile
@@ -20,6 +24,8 @@ import fr.eni.eniencheres.bo.Utilisateur;
 @WebServlet("/TraitementProfile")
 public class TraitementProfile extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = MyLogger.getLogger(TraitementProfile.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -36,6 +42,11 @@ public class TraitementProfile extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		LOG.info("void doGet");
+
+		//Sans Controle de session ou de token cette methode ne doit rien faire !!!  
+		
 		UtilisateurManager utilisateurManager = new UtilisateurManager();
 		Utilisateur utilisateur;
 		boolean modifier=false;
@@ -82,6 +93,8 @@ public class TraitementProfile extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		LOG.info("void doPost");
 		//TODO A FINIR le contrôle de l'unicite de l'email
 		//TODO Demander une checkbox pour la omdification de mot de passe
 		HttpSession session = request.getSession();
@@ -92,6 +105,8 @@ public class TraitementProfile extends HttpServlet {
 		boolean pseudoOk = true;
 		boolean emailOk = true;
 		Utilisateur utilisateurModifie=null;
+		
+		String redirectURI = "/WEB-INF/jsp/monProfile.jsp";
 		
 		//teste si pseudo ou l'email correspond à  une entrée dans la bdd
 		for(Entry<String, String[]> user : listeIdentifiantsUniques.entrySet()) {
@@ -133,48 +148,45 @@ public class TraitementProfile extends HttpServlet {
 					utilisateurModifie.setCodePostal(utilisateur.getCodePostal());
 					utilisateurModifie.setVille(utilisateur.getVille());
 					utilisateurManager.updateUtilisateur(utilisateurModifie);
-					RequestDispatcher rd = request.getRequestDispatcher("/Accueil");
-					rd.forward(request, response);
+					redirectURI = "/Accueil" ;
 				//l'email existe déjà : on envoie l'erreur sur l'email et l'objet utilisateur
 				} else {
-					request.setAttribute("erreurEmail", "Veuillez choisir un autre email.");
+					request.setAttribute("erreurMessage", "Veuillez choisir un autre email.");
 					request.setAttribute("utilisateur", utilisateur);
-					RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
-					rd.forward(request, response);
 				}
 			//cas de la création : on envoie l'erreur sur le pseudo et l'objet utilisateur
 			} else {
-				request.setAttribute("erreurPseudo", "Veuillez choisir un autre pseudo.");
+				request.setAttribute("erreurMessage", "Veuillez choisir un autre email.");
 				request.setAttribute("utilisateur", utilisateur);
-				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
-				rd.forward(request, response);
+
 			}
 		//le pseudo n'existe pas
 		}else {
 			//on contrôle l'unicité de l'email
 			if (!emailOk) {
 				//on envoie l'erreur sur l'email et l'objet utilisateur
-				request.setAttribute("erreurEmail", "Veuillez choisir un autre email.");
+				request.setAttribute("erreurMessage", "Veuillez choisir un autre email.");
 				request.setAttribute("utilisateur", utilisateur);
-				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
-				rd.forward(request, response);
 			}
 			//on controle la concordance des mots de passes
 			if(utilisateur.getMotDePasse().equals(UtilisateurManager.hash(request.getParameter("password2")))) {
 				//on envoie l'erreur sur les mots de passe et l'objet utilisateur
 				utilisateur.setMotDePasse("");
-				request.setAttribute("erreurMotDePasse", "Les mots de passes ne correspondent pas.");
+				//TODO la condition ci-dessus et le message n'ont pas rapport. Revoir l'algo
+				// La création d'un utilisateur passe par ce code.
+				request.setAttribute("erreurMessage", "Les mots de passes ne correspondent pas.");
 				request.setAttribute("utilisateur", utilisateur);
-				RequestDispatcher rd = request.getRequestDispatcher("/MonProfile");
-				rd.forward(request, response);
 			}
 			//sinon on inclut l'utilisateur
 			utilisateur.setPseudo(request.getParameter("pseudo"));
 			utilisateurManager.addUtilisateur(utilisateur);
 			session.setAttribute("pseudo", utilisateur.getPseudo());
-			RequestDispatcher rd = request.getRequestDispatcher("/TraitementAccueil");
-			rd.forward(request, response);
-		}		
+			redirectURI = "/TraitementAccueil";
+		}
+		
+		LOG.log(Level.INFO, "requestDispatcher.forward on URI : {0}", redirectURI);
+		RequestDispatcher rd = request.getRequestDispatcher(redirectURI);
+		rd.forward(request, response);
 	}
 
 }
