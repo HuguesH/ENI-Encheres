@@ -30,10 +30,10 @@ abstract class ConnectionProvider {
 		try {
 			Context context = new InitialContext();
 			ConnectionProvider.dataSource = (DataSource)context.lookup("java:comp/env/"+JNDI_DATASOURCE);
-			LOG.log(Level.INFO, "USE JNDI DataSource : {} {} ", new Object[]{JNDI_DATASOURCE,dataSource});
+			LOG.log(Level.INFO, "USE JNDI DataSource : {0} {1} ", new Object[]{JNDI_DATASOURCE,dataSource});
 
 		} catch (NamingException e){
-			LOG.log(Level.SEVERE, "Not found JNDI Resource DataSource with name : {}", JNDI_DATASOURCE);
+			LOG.log(Level.SEVERE, "Not found JNDI Resource DataSource with name : {0}", JNDI_DATASOURCE);
 			// Use the Tomcat Pool DataSource, similar to the web servelt container
 			org.apache.tomcat.jdbc.pool.DataSource dataSourceTomcat = new org.apache.tomcat.jdbc.pool.DataSource();
 			dataSourceTomcat.setDriverClassName("org.h2.Driver");
@@ -41,7 +41,7 @@ abstract class ConnectionProvider {
 			dataSourceTomcat.setUsername(MOCK_USER);
 			dataSourceTomcat.setPassword(MOCK_PASSWORD);
 			dataSource = dataSourceTomcat;
-			LOG.log(Level.WARNING, "USE MOCK Datasource {} with URL : {} ", new Object[]{dataSource,MOCK_URL_H2});
+			LOG.log(Level.WARNING, "USE MOCK Datasource {0} with URL : {1} ", new Object[]{dataSource,MOCK_URL_H2});
 		}
 		// Initialise or Check DataBase with Flyway
 		Flyway flyway = Flyway.configure().dataSource(dataSource).load();
