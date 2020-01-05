@@ -44,8 +44,9 @@ abstract class ConnectionProvider {
 			LOG.log(Level.WARNING, "USE MOCK Datasource {0} with URL : {1} ", new Object[]{dataSource,MOCK_URL_H2});
 		}
 		// Initialise or Check DataBase with Flyway
-		Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-		flyway.migrate();
+		//TODO Flyway Enterprise Edition or SQL Server upgrade required: SQL Server 2014
+		//Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+		//flyway.migrate();
 	}
 	/**
 	 * Cette methode retourne une connection operationnelle issue du pool de connexion
