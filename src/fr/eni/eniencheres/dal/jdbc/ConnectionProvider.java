@@ -1,21 +1,27 @@
 package fr.eni.eniencheres.dal.jdbc;
 
-import fr.eni.eniencheres.conf.MyLogger;
-import org.flywaydb.core.Flyway;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import liquibase.Contexts;
+import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 abstract class ConnectionProvider {
 
-	private static Logger LOG = MyLogger.getLogger(ConnectionProvider.class);
+	private static Logger LOG = LoggerFactory.getLogger(ConnectionProvider.class);
 
 	private static DataSource dataSource;
 
@@ -30,10 +36,10 @@ abstract class ConnectionProvider {
 		try {
 			Context context = new InitialContext();
 			ConnectionProvider.dataSource = (DataSource)context.lookup("java:comp/env/"+JNDI_DATASOURCE);
-			LOG.log(Level.INFO, "USE JNDI DataSource : {0} {1} ", new Object[]{JNDI_DATASOURCE,dataSource});
+			LOG.info("USE JNDI DataSource : {} {} ", new Object[]{JNDI_DATASOURCE,dataSource});
 
 		} catch (NamingException e){
-			LOG.log(Level.SEVERE, "Not found JNDI Resource DataSource with name : {0}", JNDI_DATASOURCE);
+			LOG.info("Not found JNDI Resource DataSource with name : {}", JNDI_DATASOURCE);
 			// Use the Tomcat Pool DataSource, similar to the web servelt container
 			org.apache.tomcat.jdbc.pool.DataSource dataSourceTomcat = new org.apache.tomcat.jdbc.pool.DataSource();
 			dataSourceTomcat.setDriverClassName("org.h2.Driver");
@@ -41,13 +47,30 @@ abstract class ConnectionProvider {
 			dataSourceTomcat.setUsername(MOCK_USER);
 			dataSourceTomcat.setPassword(MOCK_PASSWORD);
 			dataSource = dataSourceTomcat;
-			LOG.log(Level.WARNING, "USE MOCK Datasource {0} with URL : {1} ", new Object[]{dataSource,MOCK_URL_H2});
+			LOG.warn("USE MOCK Datasource with URL : {} ", new Object[]{MOCK_URL_H2});
 		}
-		// Initialise or Check DataBase with Flyway
-		//TODO Flyway Enterprise Edition or SQL Server upgrade required: SQL Server 2014
-		//Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-		//flyway.migrate();
+
+
+		migrateDataBase();
+
 	}
+
+	private static void migrateDataBase() {
+		Database database = null;
+		try {
+			database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
+			Liquibase liquibase = new Liquibase("db/eniChangelog.xml", new ClassLoaderResourceAccessor(), database);
+
+			liquibase.update(new Contexts(), new LabelExpression());
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (LiquibaseException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Cette methode retourne une connection operationnelle issue du pool de connexion
 	 * vers la base de donnees. 

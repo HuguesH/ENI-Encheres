@@ -1,23 +1,23 @@
 package fr.eni.eniencheres.dal;
 
 import fr.eni.eniencheres.bo.Utilisateur;
-import fr.eni.eniencheres.conf.MyLogger;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UtilisateurDAOTest {
 	
-	private static Logger LOG = MyLogger.getLogger(UtilisateurDAOTest.class);
+	private static Logger LOG = LoggerFactory.getLogger(UtilisateurDAOTest.class);
 
     UtilisateurDAO utilisateurDAO = DAOFactory.getUtilisateurDAO();
 
     @Test
     public void insertTest() throws DALException{
     	int initialCount = utilisateurDAO.selectAll().size();
-    	LOG.log(Level.INFO, "before test<insertTest>, utilisateurs count :" + String.valueOf(initialCount));
+    	LOG.info("before test<insertTest>, utilisateurs count :" + String.valueOf(initialCount));
         long id = System.currentTimeMillis();
         Utilisateur u1 = new Utilisateur("titi" + String.valueOf(id), "Nom1", "Robert", "tito@gmail.com",
                 "0606060606", "12 rue du Corbeau et du Renard", "44444", "TDCDM", "motdepasse", 600, false);

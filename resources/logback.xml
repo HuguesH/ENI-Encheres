@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%highlight(%-5level) %d %-12([%thread]) %cyan(%-36logger{36})- %msg \(%file:%line\) %n%boldRed(%xEx)
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <logger name="fr.eni.eniencheres" level="DEBUG"/>
+    <logger name="liquibase" level="WARN"/>
+    <logger name="liquibase.changelog.ChangeSet" level="INFO"/>
+
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
