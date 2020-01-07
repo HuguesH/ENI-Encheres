@@ -8,7 +8,11 @@
 [INFO] fr.eni.2019:eni-encheres:war:1.0-SNAPSHOT
 [INFO] +- com.microsoft.sqlserver:mssql-jdbc:jar:7.4.1.jre8:compile
 [INFO] +- com.h2database:h2:jar:1.4.200:compile
-[INFO] +- org.flywaydb:flyway-core:jar:6.1.3:compile
+[INFO] +- org.liquibase:liquibase-core:jar:3.8.4:compile
+[INFO] |  +- javax.xml.bind:jaxb-api:jar:2.3.0:compile
+[INFO] |  \- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |     \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.30:compile
 [INFO] +- jstl:jstl:jar:1.2:compile
 [INFO] +- javax.servlet:javax.servlet-api:jar:4.0.1:provided
 [INFO] +- org.apache.tomcat:tomcat-jdbc:jar:9.0.30:provided
@@ -18,6 +22,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  2.567 s
-[INFO] Finished at: 2020-01-05T19:20:13+01:00
+[INFO] Total time:  2.890 s
+[INFO] Finished at: 2020-01-07T16:08:17+01:00
 [INFO] ------------------------------------------------------------------------

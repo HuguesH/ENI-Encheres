@@ -1,25 +1,21 @@
 package fr.eni.eniencheres.conf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @WebFilter("/*")
 public class LogFilter implements Filter {
 
-	private static final Logger LOG = MyLogger.getLogger(LogFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LogFilter.class);
 	
 	private static final Level HTTP_DEBUG = Level.INFO;
 
@@ -69,11 +65,11 @@ public class LogFilter implements Filter {
 			throws IOException, ServletException {
 
 		StringBuilder buildInfo = new StringBuilder();
-		if (LOG.isLoggable(Level.INFO) || LOG.isLoggable(HTTP_DEBUG)) {
+		if (LOG.isInfoEnabled() || LOG.isDebugEnabled()) {
 			HttpServletRequest httpRequest;
 			httpRequest = (HttpServletRequest) request;
 			buildInfo.append(httpRequest.getMethod()).append(" ").append(httpRequest.getServletPath());
-			if (LOG.isLoggable(HTTP_DEBUG)) {
+			if (LOG.isDebugEnabled()) {
 				// HEADERS
 				Enumeration<String> headerNames = httpRequest.getHeaderNames();	
 				if (headerNames.hasMoreElements()) {
@@ -83,7 +79,7 @@ public class LogFilter implements Filter {
 						sbHeaders.append(headerName).append(":").append(httpRequest.getHeader(headerName)).append(",");
 					}
 					sbHeaders.append("]");
-					LOG.log(HTTP_DEBUG,sbHeaders.toString());
+					LOG.debug(sbHeaders.toString());
 				}
 				// PARAMETERS
 				Enumeration<String> parameterNames = httpRequest.getParameterNames();
@@ -95,7 +91,7 @@ public class LogFilter implements Filter {
 								.append(",");
 					}
 					sbParameters.append("]");
-					LOG.log(HTTP_DEBUG,sbParameters.toString());
+					LOG.debug(sbParameters.toString());
 				}
 				// ATTRIBUTES
 				Enumeration<String> attributeNames = httpRequest.getAttributeNames();
@@ -107,7 +103,7 @@ public class LogFilter implements Filter {
 								.append(",");
 					}
 					sbAttributes.append("]");
-					LOG.log(HTTP_DEBUG,sbAttributes.toString());
+					LOG.debug(sbAttributes.toString());
 				}
 			}
 		}
@@ -115,9 +111,9 @@ public class LogFilter implements Filter {
 		// DO FILTER
 		chain.doFilter(request, response);
 
-		if (LOG.isLoggable(Level.INFO) || LOG.isLoggable(Level.FINE)) {
+		if (LOG.isInfoEnabled() || LOG.isDebugEnabled()) {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
-			if (LOG.isLoggable(HTTP_DEBUG)) {
+			if (LOG.isDebugEnabled()) {
 				Collection<String> headerNames = httpResponse.getHeaderNames();
 				StringBuilder sbHeaders = new StringBuilder(buildInfo).append(" resp headers : [");
 				for (String headerName : headerNames) {
@@ -126,12 +122,12 @@ public class LogFilter implements Filter {
 							: headerValues.iterator().next();
 					sbHeaders.append(headerName).append(":").append(headerValue).append(",");
 				}
-				LOG.log(HTTP_DEBUG,sbHeaders.toString());
+				LOG.debug(sbHeaders.toString());
 			}
 			buildInfo.append(" : ").append(httpResponse.getStatus()).append(" | ").append(httpResponse.getContentType())
 					.append(" | ").append(httpResponse.getBufferSize());
 			if(httpResponse.getStatus()>399) {
-				LOG.warning(buildInfo.toString());
+				LOG.warn(buildInfo.toString());
 			}else {
 				LOG.info(buildInfo.toString());
 			}
